@@ -66,7 +66,7 @@ describe('aja()', function(){
                     expect(bar).to.equal('bar');
                     done();
                 })
-                .trigger('foo', 'bar');
+                .trigger('foo', ['bar']);
             });
 
         });
