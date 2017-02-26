@@ -336,7 +336,7 @@
                 var eventCalls  = function eventCalls(name, data){
                     if(events[name] instanceof Array){
                         events[name].forEach(function(event){
-                            event.call(self, data);
+                            event.apply(self, data);
                         });
                     }
                 };
@@ -410,7 +410,7 @@
                         try {
                             res = JSON.parse(res);
                         } catch(e){
-                            self.trigger('error', e);
+                            self.trigger('error', [e]);
                             return null;
                         }
                     }
@@ -501,7 +501,7 @@
                 //bind events
                 request.onprogress = function(e){
                     if (e.lengthComputable) {
-                        self.trigger('progress', e.loaded / e.total);
+                        self.trigger('progress', [e.loaded / e.total]);
                     }
                 };
 
@@ -515,28 +515,28 @@
                         if(typeof processRes === 'function'){
                             response = processRes(response);
                         }
-                        self.trigger('success', response);
+                        self.trigger('success', [response, this.status, request]);
                     }
 
-                    self.trigger(this.status, response);
+                    self.trigger(this.status, [response, this.status, request]);
 
-                    self.trigger('end', response);
+                    self.trigger('end', [response, this.status, request]);
                 };
 
                 request.onerror = function onRequestError (err){
                     if (timeoutId) {
                         clearTimeout(timeoutId);
                     }
-                    self.trigger('error', err, arguments);
+                    self.trigger('error', [err], arguments);
                 };
 
                 //sets the timeout
                 if (timeout) {
                     timeoutId = setTimeout(function() {
-                        self.trigger('timeout', {
+                        self.trigger('timeout', [{
                             type: 'timeout',
                             expiredAfter: timeout
-                        }, request, arguments);
+                        }], request, arguments);
                         request.abort();
                     }, timeout);
                 }
@@ -567,7 +567,7 @@
 
                 //window.ajajsonp = window.ajajsonp || {};
                 window[jsonPadding] = function padding (response){
-                    self.trigger('success', response);
+                    self.trigger('success', [response, 200, null]);
                     head.removeChild(script);
                     window[jsonPadding] = undefined;
                 };
@@ -580,7 +580,7 @@
                 script.async = async;
                 script.src = url;
                 script.onerror = function(){
-                    self.trigger('error', arguments);
+                    self.trigger('error', [arguments]);
                     head.removeChild(script);
                     window[jsonPadding] = undefined;
                 };
@@ -611,11 +611,11 @@
                 script.async = async;
                 script.src = url;
                 script.onerror = function onScriptError(){
-                    self.trigger('error', arguments);
+                    self.trigger('error', [arguments]);
                     head.removeChild(script);
                 };
                 script.onload = function onScriptLoad(){
-                    self.trigger('success', arguments);
+                    self.trigger('success', [arguments]);
                 };
 
                 head.appendChild(script);
