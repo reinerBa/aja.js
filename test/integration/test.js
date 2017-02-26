@@ -302,11 +302,11 @@ describe('aja()', function(){
         aja()
             .url('/test/samples/data.json')
             .on('success', function(data, info, jqXHR){
-			   expect(info).to.be.an('number');
+                expect(info).to.be.an('number');
                 expect(info).to.equal(200);
                 expect(jqXHR).to.not.equals(null);
-				expect(jqXHR).to.be.an('XMLHttpRequest');
-				expect(jqXHR.getAllResponseHeaders).to.be.a('function');
+                expect(jqXHR).to.be.an('XMLHttpRequest');
+                expect(jqXHR.getAllResponseHeaders).to.be.a('function');
                 done();
             })
             .go();
